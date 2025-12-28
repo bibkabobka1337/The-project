@@ -28,7 +28,7 @@ python scripts/example_usage.py
 
 - [ ] Все тесты проходят: `pytest -v`
 - [ ] Код проверен линтером: `flake8 src tests`
-- [ ] README обновлен (замените YOUR_USERNAME/YOUR_REPO)
+- [x] README обновлен (плейсхолдеры заменены на bibkabobka1337/The-project)
 - [ ] Все файлы закоммичены и запушены
 - [ ] GitHub Actions workflow успешно выполнен
 
@@ -46,7 +46,7 @@ python scripts/example_usage.py
 
 ## Важные замечания
 
-1. **Обновите README.md**: Замените `YOUR_USERNAME/YOUR_REPO` на реальные значения
+1. ✅ **README.md обновлен**: Плейсхолдеры заменены на `bibkabobka1337/The-project`
 2. **Проверьте workflows**: Убедитесь, что пути к файлам корректны
 3. **Запустите тесты**: `pytest -v` должен пройти успешно
 4. **Проверьте линтер**: `flake8 src tests` не должен показывать критических ошибок

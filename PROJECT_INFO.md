@@ -88,6 +88,6 @@
 
 - Все файлы должны быть закоммичены
 - GitHub Actions должен показывать ✅ success
-- README нужно обновить (заменить YOUR_USERNAME/YOUR_REPO)
+- ✅ README обновлен (плейсхолдеры заменены на bibkabobka1337/The-project)
 - Тесты должны проходить локально
 
