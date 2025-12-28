@@ -1,0 +1,30 @@
+================================================================================
+CODE QUALITY ASSESSMENT REPORT
+================================================================================
+Generated: 2024-12-20 14:23:15
+
+File: data/sample_code.py
+
+Overall Score: 76.8/100
+--------------------------------------------------------------------------------
+METRICS:
+  PEP 8 Compliance: 95.0%
+  Average Complexity: 3.5
+  Max Complexity: 6
+  Docstring Coverage: 66.7%
+  Code Duplication: 18.5%
+  Lines of Code: 65
+  Functions: 5
+  Classes: 1
+
+FUNCTION COMPLEXITY:
+  complex_function: 6
+  simple_function: 1
+  add: 1
+  multiply: 1
+
+RECOMMENDATIONS:
+  • Add docstrings to functions and classes (current coverage: 66.7%)
+  • Reduce code duplication (current ratio: 18.5%)
+================================================================================
+

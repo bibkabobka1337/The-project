@@ -1,0 +1,51 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Data files (если большие)
+data/*.csv
+data/*.xlsx
+!data/sample.csv
+!data/.gitkeep
+
+# Generated files
+*.log
+.DS_Store
+*.coverage
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Reports
+reports/
+*.html
+*.json
+!package.json
+!package-lock.json
+
+# OS
+Thumbs.db
+desktop.ini
+

@@ -1,0 +1,126 @@
+name: Daily Code Quality Report
+
+on:
+  schedule:
+    # Run every day at 00:00 UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    inputs:
+      target_directory:
+        description: 'Directory to analyze (relative to repo root)'
+        required: false
+        default: 'data'
+        type: string
+      output_format:
+        description: 'Report format'
+        required: false
+        default: 'text'
+        type: choice
+        options:
+          - text
+          - json
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Analyze code quality
+      id: analyze
+      run: |
+        TARGET_DIR="${{ github.event.inputs.target_directory || 'data' }}"
+        OUTPUT_FORMAT="${{ github.event.inputs.output_format || 'text' }}"
+        
+        echo "Analyzing directory: $TARGET_DIR"
+        
+        # Create reports directory
+        mkdir -p reports
+        
+        # Analyze and generate report
+        python -m src.main "$TARGET_DIR" --output "reports/quality_report.txt" --format "$OUTPUT_FORMAT" || true
+        
+        # Also analyze sample code if it exists
+        if [ -f "data/sample_code.py" ]; then
+          python -m src.main "data/sample_code.py" --output "reports/sample_code_report.txt" --format text || true
+        fi
+        
+        # Generate summary JSON
+        python -c "
+import sys
+sys.path.insert(0, '.')
+from src.analyzer import CodeAnalyzer
+from src.reporter import ReportGenerator
+import json
+import os
+
+analyzer = CodeAnalyzer()
+reporter = ReportGenerator()
+
+target = os.environ.get('TARGET_DIR', 'data')
+if os.path.isdir(target):
+    results = analyzer.analyze_directory(target)
+else:
+    results = analyzer.analyze_file(target)
+
+if 'error' not in results:
+    summary = reporter.generate_summary(results)
+    with open('reports/summary.json', 'w') as f:
+        json.dump(summary, f, indent=2)
+" || true
+      env:
+        TARGET_DIR: ${{ github.event.inputs.target_directory || 'data' }}
+
+    - name: Generate timestamp
+      id: timestamp
+      run: |
+        echo "timestamp=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_OUTPUT
+        echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
+    - name: Upload reports as artifacts
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: quality-reports-${{ steps.timestamp.outputs.date }}
+        path: reports/
+        retention-days: 30
+
+    - name: Create summary comment
+      if: github.event_name == 'workflow_dispatch'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          let summary = '## Code Quality Report\n\n';
+          
+          try {
+            if (fs.existsSync('reports/summary.json')) {
+              const data = JSON.parse(fs.readFileSync('reports/summary.json', 'utf8'));
+              summary += `- **Score**: ${data.score || data.average_score || 'N/A'}/100\n`;
+              summary += `- **Grade**: ${data.grade || data.average_grade || 'N/A'}\n`;
+              if (data.files_analyzed) {
+                summary += `- **Files Analyzed**: ${data.files_analyzed}\n`;
+              }
+              summary += `- **Timestamp**: ${data.timestamp}\n`;
+            } else {
+              summary += 'Report generated successfully. Check artifacts for details.';
+            }
+          } catch (error) {
+            summary += 'Error generating summary. Check artifacts for full report.';
+          }
+          
+          summary += '\n\n📊 Full reports available in workflow artifacts.';
+          
+          console.log(summary);
+
